@@ -1,41 +1,47 @@
-use std::ffi::CString;
 use crate::shader::Shader;
+use crate::vmath::matrix4f::Matrix4f;
 use crate::vmath::utils::print;
+use std::ffi::CString;
 
-pub struct Program{
-    shaders:Vec<Shader>,
-    id:gl::types::GLuint,
+pub struct Program {
+    shaders: Vec<Shader>,
+    id: gl::types::GLuint,
 }
 
-impl Program{
-    pub fn new()->Program{
-        let mut id_=0;
-        unsafe{
-            id_=gl::CreateProgram();
+impl Program {
+    pub fn new() -> Program {
+        let mut id_ = 0;
+        unsafe {
+            id_ = gl::CreateProgram();
         }
 
-        Program{
-            shaders:vec![],
-            id:id_,
+        Program {
+            shaders: vec![],
+            id: id_,
         }
     }
 
-    pub fn attach_shader(&mut self,shader:Shader){
-        unsafe{
-            gl::AttachShader(self.id,shader.id);
+    pub fn attach_shader(&mut self, shader: Shader) {
+        unsafe {
+            gl::AttachShader(self.id, shader.id);
             self.shaders.push(shader);
         }
     }
 
-    pub fn link(&mut self){
-        unsafe{
+    pub fn link(&mut self) {
+        unsafe {
             gl::LinkProgram(self.id);
 
-            let mut s=0;
-            gl::GetProgramiv(self.id,gl::LINK_STATUS,&mut s);
-            if s==0{
-                let mut err=empty_cstring(512);
-                gl::GetProgramInfoLog(self.id,512,std::ptr::null_mut(),err.as_ptr() as *mut gl::types::GLchar);
+            let mut s = 0;
+            gl::GetProgramiv(self.id, gl::LINK_STATUS, &mut s);
+            if s == 0 {
+                let mut err = empty_cstring(512);
+                gl::GetProgramInfoLog(
+                    self.id,
+                    512,
+                    std::ptr::null_mut(),
+                    err.as_ptr() as *mut gl::types::GLchar,
+                );
                 print(err.to_str().unwrap());
             }
 
@@ -43,9 +49,21 @@ impl Program{
         }
     }
 
-    pub fn bind(&self){
-        unsafe{
+    pub fn bind(&self) {
+        unsafe {
             gl::UseProgram(self.id);
+        }
+    }
+
+    pub fn load_mat4f(&self, mat: Matrix4f, name: &str) {
+        unsafe {
+            let name = CString::new(name).unwrap();
+            gl::UniformMatrix4fv(
+                gl::GetProgramResourceLocation(self.id, gl::UNIFORM, name.as_ptr()),
+                1,
+                gl::FALSE,
+                mat.as_ptr(),
+            );
         }
     }
 }

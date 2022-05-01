@@ -1,3 +1,4 @@
+use crate::vmath::matrix4f::Matrix4f;
 use crate::vmath::vector2::Vector2;
 use crate::vmath::vector3::Vector3;
 use glfw::ffi::glfwGetTime;
@@ -24,6 +25,7 @@ pub struct SWindow {
     glfw_: glfw::Glfw,
     mouse_mode: glfw::CursorMode,
     pub window: glfw::Window,
+    pub p_mat: Matrix4f,
     events: std::sync::mpsc::Receiver<(f64, glfw::WindowEvent)>,
 }
 
@@ -40,6 +42,7 @@ struct SOtherStuff {
     pub counter: f32,
     pub frame_count: i32,
     pub fps: i32,
+    pub fov:f32,
 }
 
 impl Engine {
@@ -79,13 +82,19 @@ impl Engine {
             unsafe { INITIALIZED = true };
 
             Engine {
-                info: wi,
                 win: SWindow {
                     glfw_: glfw__,
                     mouse_mode: glfw::CursorMode::Normal,
+                    p_mat: Matrix4f::perspective(
+                        70.0_f32.to_radians(),
+                        (wi.size.x as f32) / (wi.size.y as f32),
+                        0.1,
+                        512.0,
+                    ),
                     window: window,
                     events: events,
                 },
+                info: wi,
                 input_info: SInputInfo {
                     move_speed: Vector3::new(0.0, 0.0, 0.0),
                     rot_speed: Vector2::new(0.0, 0.0),
@@ -98,6 +107,7 @@ impl Engine {
                     counter: 0.0,
                     fps: 0,
                     frame_count: 0,
+                    fov:70.0,
                 },
                 dt: 0.0,
             }
@@ -149,6 +159,20 @@ impl Engine {
     }
 
     pub fn input(&mut self) {
-        //input stuff
+        for (_, event) in glfw::flush_messages(&self.win.events) {
+            match event {
+                glfw::WindowEvent::Size(x, y) => unsafe {
+                    self.info.size = Vector2::new(x, y);
+                    gl::Viewport(0, 0, x, y);
+                    self.win.p_mat = Matrix4f::perspective(
+                        self.other_stuff.fov.to_radians(),
+                        (self.info.size.x as f32) / (self.info.size.y as f32),
+                        0.1,
+                        512.0,
+                    );
+                },
+                _ => {}
+            }
+        }
     }
 }

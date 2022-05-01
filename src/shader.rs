@@ -1,6 +1,6 @@
+use crate::vmath::utils::print;
 use std::ffi::CString;
 use std::io::Read;
-use crate::vmath::utils::print;
 
 pub struct Shader {
     pub id: gl::types::GLuint,
@@ -47,9 +47,9 @@ fn empty_cstring(size: usize) -> CString {
     unsafe { CString::from_vec_unchecked(buffer) }
 }
 
-impl Drop for Shader{
+impl Drop for Shader {
     fn drop(&mut self) {
-        unsafe{
+        unsafe {
             gl::DeleteShader(self.id);
         }
     }
