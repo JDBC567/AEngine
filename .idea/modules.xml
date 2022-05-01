@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AEngine.iml" filepath="$PROJECT_DIR$/AEngine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aengine.iml" filepath="$PROJECT_DIR$/aengine.iml" />
     </modules>
   </component>
 </project>
