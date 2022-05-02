@@ -1,4 +1,5 @@
 use crate::vmath::matrix4f::Matrix4f;
+use crate::vmath::utils::print;
 use crate::vmath::vector2::Vector2;
 use crate::vmath::vector3::Vector3;
 use glfw::ffi::glfwGetTime;
@@ -42,7 +43,7 @@ struct SOtherStuff {
     pub counter: f32,
     pub frame_count: i32,
     pub fps: i32,
-    pub fov:f32,
+    pub fov: f32,
 }
 
 impl Engine {
@@ -107,7 +108,7 @@ impl Engine {
                     counter: 0.0,
                     fps: 0,
                     frame_count: 0,
-                    fov:70.0,
+                    fov: 70.0,
                 },
                 dt: 0.0,
             }
@@ -173,6 +174,18 @@ impl Engine {
                 },
                 _ => {}
             }
+        }
+    }
+
+    pub fn get_error() {
+        unsafe {
+            print(gl::GetError());
+        }
+    }
+
+    pub fn disableDepth() {
+        unsafe {
+            gl::Disable(gl::DEPTH_TEST);
         }
     }
 }

@@ -66,6 +66,26 @@ impl Program {
             );
         }
     }
+
+    pub fn load_int(&self, val: i32, name: &str) {
+        unsafe {
+            let name = CString::new(name).unwrap();
+            gl::Uniform1i(
+                gl::GetProgramResourceLocation(self.id, gl::UNIFORM, name.as_ptr()),
+                val,
+            );
+        }
+    }
+
+    pub fn load_float(&self, val: f32, name: &str) {
+        unsafe {
+            let name = CString::new(name).unwrap();
+            gl::Uniform1f(
+                gl::GetProgramResourceLocation(self.id, gl::UNIFORM, name.as_ptr()),
+                val,
+            );
+        }
+    }
 }
 
 fn empty_cstring(size: usize) -> CString {
